@@ -1,0 +1,24 @@
+{
+  "name": "battlesnake-2020",
+  "version": "1.0.0",
+  "description": "Battlesnake 2020 snake.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nickschuster/Battlesnake2020.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nickschuster/Battlesnake2020/issues"
+  },
+  "homepage": "https://github.com/nickschuster/Battlesnake2020#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "morgan": "^1.9.1"
+  }
+}
