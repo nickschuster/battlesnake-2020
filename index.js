@@ -28,7 +28,7 @@ app.post('/start', (request, response) => {
 
 // Ask for move. Get 500 ms to repond with up,left,right,down.
 app.post('/move', (request, response) => {
-    return response.json({'move': 'up'});
+    return response.json({'move': 'left'});
 });
 
 // Game has ended.
