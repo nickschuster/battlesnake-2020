@@ -22,6 +22,7 @@ app.post('/start', (request, response) => {
     const snake = {
         color: '#DFFF00'
     };
+    console.log('Game starting.');
     return response.json(snake);
 });
 
