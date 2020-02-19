@@ -38,6 +38,7 @@ app.post('/end', (request, response) => {
     return response.status(200).json({});
 });
 
+// Listen on port.
 app.listen(app.get('port'), () => {
     console.log(`Listening: ${app.get('port')}.`);
 });
