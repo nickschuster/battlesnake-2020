@@ -14,26 +14,28 @@ app.use(express.json());
 
 // Make sure snake is alive (responding to requests).
 app.post('/ping', (request, response) => {
-    return response.json({});
+    return response.status(200).json({});
 });
 
 // Start of a game. Return snake options.
 app.post('/start', (request, response) => {
     const snake = {
-        color: '#DFFF00'
+        color: '#DFFF00',
+        headType: 'dead',
+        tailType: 'bolt'
     };
     console.log('Game starting.');
-    return response.json(snake);
+    return response.status(200).json(snake);
 });
 
 // Ask for move. Get 500 ms to repond with up,left,right,down.
 app.post('/move', (request, response) => {
-    return response.json({'move': 'left'});
+    return response.status(200).json({'move': 'left'});
 });
 
 // Game has ended.
 app.post('/end', (request, response) => {
-    return response.json({});
+    return response.status(200).json({});
 });
 
 app.listen(app.get('port'), () => {
