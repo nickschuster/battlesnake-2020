@@ -43,48 +43,48 @@ class Maze {
     constructor(game) {
         this.game = game;
         this.nodes = [];
-        for(let i = 0; i < game.board.height * game.board.width/4; i++) {
+        for(let i = 0; i < Math.floor(game.board.height * game.board.width/4); i++) {
             this.nodes.push(new MazeNode());
         }
     }
 
     markVisited(x, y) {
-        this.nodes[x+y*this.game.board.width/2].visited = true;
+        this.nodes[Math.floor(x+y*this.game.board.width/2)].visited = true;
     }
 
     markCanGoDown(x, y) {
-        this.nodes[x+y*this.game.board.width/2].canGoDown = true;
+        this.nodes[Math.floor(x+y*this.game.board.width/2)].canGoDown = true;
     }
 
     markCanGoRight(x, y) {
-        this.nodes[x+y*this.game.board.width/2].canGoRight = true;
+        this.nodes[Math.floor(x+y*this.game.board.width/2)].canGoRight = true;
     }
 
     canGoRight(x, y) {
-        return this.nodes[x+y*this.game.board.width/2].canGoRight;
+        return this.nodes[Math.floor(x+y*this.game.board.width/2)].canGoRight;
     }
 
     canGoDown(x, y) {
-        return this.nodes[x+y*this.game.board.height/2].canGoDown;
+        return this.nodes[Math.floor(x+y*this.game.board.height/2)].canGoDown;
     }
 
     canGoLeft(x, y) {
         if(x == 0) return false;
-        return this.nodes[(x-1)+y*this.game.board.width/2].canGoRight;
+        return this.nodes[Math.floor((x-1)+y*this.game.board.width/2)].canGoRight;
     }
 
     canGoUp(x, y) {
         if(y == 0) return false;
-        return this.nodes[x+(y-1)*this.game.board.width/2].canGoDown;
+        return this.nodes[Math.floor(x+(y-1)*this.game.board.width/2)].canGoDown;
     }
 
     isVisited(x, y) {
-        return this.nodes[x+y*this.game.board.width/2].visited;
+        return this.nodes[Math.floor(x+y*this.game.board.width/2)].visited;
     }
 
     // Recursively generate the maze.
     generation(fromx, fromy, x, y) {
-        if(x < 0 || y < 0 || x >= this.game.board.width/2 || y >= this.game.board.height/2) return;
+        if(x < 0 || y < 0 || x >= Math.floor(this.game.board.width/2) || y >= Math.floor(this.game.board.height/2)) return;
         if(this.isVisited(x, y)) return;
         this.markVisited(x, y);
 
@@ -126,35 +126,98 @@ class HamCycle {
         this.hamiltonianCycle = [];
         this.game = game;
         this.maze = new Maze(game);
-        this.maze.generation(-1,-1,0,0);
+        this.maze.generation(-1, -1, 0, 0);
         this.generateHamiltonianCycle();
     }
 
     generateHamiltonianCycle() {
-        x = 0;
-        y = 0;
-        direction = this.maze.canGoDown(x,y) ? Moves.UP : Moves.LEFT;
-        hamCycleIndex = 0;
+        let x = 0;
+        let y = 0;
+        let direction = this.maze.canGoDown(x, y) ? Moves.UP : Moves.LEFT;
+        let hamCycleIndex = 0;
         do {
-            nextDirection = this.findNextDirection(x,y,direction);
+            let nextDirection = this.findNextDirection(x, y, direction);
             switch(direction) {
                 case Moves.RIGHT:
-                    this.setTourNumber(x*2,y*2,hamCycleIndex++);
-                    // HERE
+                    this.setHamCycleNumber(x*2, y*2, hamCycleIndex++);
+                    if(nextDirection == direction || nextDirection == Moves.DOWN || nextDirection == Moves.LEFT) {
+                        this.setHamCycleNumber(x*2+1, y*2, hamCycleIndex++);
+                    }
+                    if(nextDirection == Moves.DOWN || nextDirection == Moves.LEFT) {
+                        this.setHamCycleNumber(x*2+1, y*2+1, hamCycleIndex++);
+                    }
+                    if(nextDirection == Moves.LEFT) {
+                        this.setHamCycleNumber(x*2, y*2+1, hamCycleIndex++);
+                    }
+                    break;
+                case Moves.DOWN:
+                    this.setHamCycleNumber(x*2+1, y*2, hamCycleIndex++);
+                    if(nextDirection == direction || nextDirection == Moves.LEFT || nextDirection == Moves.UP) {
+                        this.setHamCycleNumber(x*2+1, y*2+1, hamCycleIndex++);
+                    }
+                    if(nextDirection == Moves.LEFT || nextDirection == Moves.UP) {
+                        this.setHamCycleNumber(x*2, y*2+1, hamCycleIndex++);
+                    }
+                    if(nextDirection == Moves.UP) {
+                        this.setHamCycleNumber(x*2, y*2, hamCycleIndex++);
+                    }
+                    break;
+                case Moves.LEFT:
+                    this.setHamCycleNumber(x*2+1, y*2+1, hamCycleIndex++);
+                    if(nextDirection == direction || nextDirection == Moves.UP || nextDirection == Moves.RIGHT) {
+                        this.setHamCycleNumber(x*2, y*2+1, hamCycleIndex++);
+                    }
+                    if(nextDirection == Moves.UP || nextDirection == Moves.RIGHT) {
+                        this.setHamCycleNumber(x*2, y*2, hamCycleIndex++);
+                    }
+                    if(nextDirection == Moves.RIGHT) {
+                        this.setHamCycleNumber(x*2+1, y*2, hamCycleIndex++);
+                    }
+                    break;
+                case Moves.UP:
+                    this.setHamCycleNumber(x*2, y*2+1, hamCycleIndex++);
+                    if(nextDirection == direction || nextDirection == Moves.RIGHT || nextDirection == Moves.DOWN) {
+                        this.setHamCycleNumber(x*2, y*2, hamCycleIndex++);
+                    }
+                    if(nextDirection == Moves.RIGHT || nextDirection == Moves.DOWN) {
+                        this.setHamCycleNumber(x*2+1, y*2, hamCycleIndex++);
+                    }
+                    if(nextDirection == Moves.DOWN) {
+                        this.setHamCycleNumber(x*2+1, y*2+1, hamCycleIndex++);
+                    }
+                    break;
             }
-        } while(hamCycleIndex != this.game.board.width*this.game.board.height);
+            direction = nextDirection;
+
+            switch(nextDirection) {
+                case Moves.RIGHT: ++x; break;
+                case Moves.LEFT: --x; break;
+                case Moves.DOWN: ++y; break;
+                case Moves.UP: --y; break;
+            }
+            console.log(hamCycleIndex);
+            console.log("board: " + this.game.board.width*this.game.board.height);
+            // POTENTIAL PROBLEMS HERE
+        } while(hamCycleIndex < this.game.board.width*this.game.board.height);
     }
 
-    setTourNumber(x,y,hamCycleIndex) {
-        if(this.getPathNumber(x,y) != 0) return;
+    setHamCycleNumber(x, y, hamCycleIndex) {
+        if(this.getHamCycleNumber(x,y) != 0) return;
         this.hamiltonianCycle[x+y*this.game.board.width] = hamCycleIndex;
     }
 
-    getPathNumber(x, y) {
+    getHamCycleNumber(x, y) {
         return this.hamiltonianCycle[x+y*this.game.board.width];
     }
 
-    findNextDirection(x,y,direction) {
+    getDistanceOnCycle(pointOne, pointTwo) {
+        if(pointOne < pointTwo) {
+            return pointTwo-pointOne-1;
+        }
+        return pointTwo-pointOne-1+this.game.board.width*this.game.board.height;
+    }
+
+    findNextDirection(x, y, direction) {
         if(direction == Moves.UP) {
             if(this.maze.canGoUp(x,y)) {
                 return Moves.UP;
@@ -212,11 +275,27 @@ app.post('/ping', (request, response) => {
 // Start of a game. Return snake options.
 app.post('/start', (request, response) => {
     gameData[request.body.game.id] = [new HamCycle(request.body)];
+    console.log(request.body.you.body[0].x);
     return response.status(200).json(snake);
 });
 
 // Ask for move. Get 500 ms to repond with up,left,right,down.
 app.post('/move', (request, response) => {
+
+    // Need away to detemine if the snake is currently on food and 
+    // subtract on extra square if it is.
+
+    let currentHamCycle = gameData[request.body.game.id];
+    let hamCycleIndex = currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y);
+    let distanceToFood = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.board.food[0].x,request.body.board.food[0].y));
+    let distanceToTail = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[request.body.you.body.length].x, request.body.you.body[request.body.you.body.length].x));
+    let cuttingAmountAvailable = distanceToTail - request.body.you.body.length - 3;
+    let emptySquaresOnBoard = request.body.board.height*request.body.board.width - request.body.you.body.length - request.body.board.food.length; 
+
+    // Logic for progressivly lowering cutting amount needed. 
+
+    let cuttingAmountDesired = distanceToFood;
+
     return response.status(200).json({'move': 'left'});
 });
 
