@@ -195,8 +195,8 @@ class HamCycle {
                 case Moves.DOWN: ++y; break;
                 case Moves.UP: --y; break;
             }
-            console.log(hamCycleIndex);
-            console.log("board: " + this.game.board.width*this.game.board.height);
+            //console.log(hamCycleIndex);
+            //console.log("board: " + this.game.board.width*this.game.board.height);
             // POTENTIAL PROBLEMS HERE
         } while(hamCycleIndex < this.game.board.width*this.game.board.height);
     }
@@ -219,10 +219,13 @@ class HamCycle {
 
     checkForCollison(x, y) {
         if(x >= this.game.board.width || x < 0 || y >= this.game.board.height || y < 0) return true;
-        for (const selfBody in this.game.you.body) {
-            if(selfBody.x == x && selfBody.y == y) return true;
-        }
-        return false;
+        let collision = false;
+        this.game.you.body.forEach(item => {
+            if(item.x == x && item.y == y) collision = true;
+            console.log(item.x + " " + x + item.y + " " + y);
+        });
+        console.log(collision);
+        return collision;
         
         // CHECK FOR ENEMY SNAKES
         //for (const enemy in this.game)
@@ -298,7 +301,6 @@ app.post('/move', (request, response) => {
     let currentHamCycle = gameData[request.body.game.id];
     let hamCycleIndex = currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y);
     let distanceToFood = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.board.food[0].x,request.body.board.food[0].y));
-    console.log(request.body.you.body.length);
     let distanceToTail = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[request.body.you.body.length-1].x, request.body.you.body[request.body.you.body.length-1].x));
     let cuttingAmountAvailable = distanceToTail - request.body.you.body.length - 3;
     let emptySquaresOnBoard = request.body.board.height*request.body.board.width - request.body.you.body.length - request.body.board.food.length; 
