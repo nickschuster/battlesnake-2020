@@ -308,7 +308,7 @@ app.post('/move', (request, response) => {
     let cuttingAmountDesired = distanceToFood;
 
     // Temp
-    cuttingAmountAvailable = cuttingAmountDesired;
+    cuttingAmountAvailable = 0;
 
     // Get available moves.
     let canGoRight = !currentHamCycle.checkForCollison(request.body.you.body[0].x+1, request.body.you.body[0].y);
