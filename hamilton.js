@@ -285,8 +285,7 @@ app.post('/ping', (request, response) => {
 
 // Start of a game. Return snake options.
 app.post('/start', (request, response) => {
-    gameData[request.body.game.id] = [new HamCycle(request.body)];
-    console.log(request.body.you.body[0].x);
+    gameData[request.body.game.id] = new HamCycle(request.body);
     return response.status(200).json(snake);
 });
 
@@ -299,7 +298,8 @@ app.post('/move', (request, response) => {
     let currentHamCycle = gameData[request.body.game.id];
     let hamCycleIndex = currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y);
     let distanceToFood = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.board.food[0].x,request.body.board.food[0].y));
-    let distanceToTail = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[request.body.you.body.length].x, request.body.you.body[request.body.you.body.length].x));
+    console.log(request.body.you.body.length);
+    let distanceToTail = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[request.body.you.body.length-1].x, request.body.you.body[request.body.you.body.length-1].x));
     let cuttingAmountAvailable = distanceToTail - request.body.you.body.length - 3;
     let emptySquaresOnBoard = request.body.board.height*request.body.board.width - request.body.you.body.length - request.body.board.food.length; 
 
