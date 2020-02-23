@@ -217,6 +217,17 @@ class HamCycle {
         return pointTwo-pointOne-1+this.game.board.width*this.game.board.height;
     }
 
+    checkForCollison(x, y) {
+        if(x >= this.game.board.width || x < 0 || y >= this.game.board.height || y < 0) return true;
+        for (const selfBody in this.game.you.body) {
+            if(selfBody.x == x && selfBody.y == y) return true;
+        }
+        return false;
+        
+        // CHECK FOR ENEMY SNAKES
+        //for (const enemy in this.game)
+    }
+
     findNextDirection(x, y, direction) {
         if(direction == Moves.UP) {
             if(this.maze.canGoUp(x,y)) {
@@ -296,7 +307,55 @@ app.post('/move', (request, response) => {
 
     let cuttingAmountDesired = distanceToFood;
 
-    return response.status(200).json({'move': 'left'});
+    // Temp
+    cuttingAmountAvailable = cuttingAmountDesired;
+
+    // Get available moves.
+    let canGoRight = !currentHamCycle.checkForCollison(request.body.you.body[0].x+1, request.body.you.body[0].y);
+    let canGoLeft = !currentHamCycle.checkForCollison(request.body.you.body[0].x-1, request.body.you.body[0].y);
+    let canGoDown = !currentHamCycle.checkForCollison(request.body.you.body[0].x, request.body.you.body[0].y+1);
+    let canGoUp = !currentHamCycle.checkForCollison(request.body.you.body[0].x, request.body.you.body[0].y-1);
+
+    let bestDistance = -1;
+    let bestDirection;
+    if(canGoRight) {
+        let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x+1, request.body.you.body[0].y));
+        if (distance <= cuttingAmountAvailable || distance < bestDistance) {
+            bestDirection = Moves.RIGHT;
+            bestDistance = distance;
+        }
+    }
+    if(canGoLeft) {
+        let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x-1, request.body.you.body[0].y));
+        if (distance <= cuttingAmountAvailable || distance < bestDistance) {
+            bestDirection = Moves.LEFT;
+            bestDistance = distance;
+        }
+    }
+    if(canGoDown) {
+        let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y+1));
+        if (distance <= cuttingAmountAvailable || distance < bestDistance) {
+            bestDirection = Moves.DOWN;
+            bestDistance = distance;
+        }
+    }
+    if(canGoUp) {
+        let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y-1));
+        if (distance <= cuttingAmountAvailable || distance < bestDistance) {
+            bestDirection = Moves.UP;
+            bestDistance = distance;
+        }
+    }
+
+    if(!(bestDistance >= 0)) {
+        if(canGoUp) bestDirection = Moves.UP;
+        else if(canGoLeft) bestDirection = Moves.LEFT;
+        else if(canGoRight) bestDirection = Moves.RIGHT;
+        else if(canGoDown) bestDirection = Moves.DOWN;
+        else bestDirection = Moves.DOWN;
+    }
+
+    return response.status(200).json({'move': bestDirection});
 });
 
 // Game has ended.
