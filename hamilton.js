@@ -5,6 +5,9 @@ const log = require('morgan');
 const express = require('express');
 const app = express();
 
+// File writing for debugging.
+const fs = require('fs');
+
 app.set('port', (9001));
 
 app.enable('verbose errors');
@@ -124,6 +127,9 @@ class Maze {
 class HamCycle {
     constructor(game) {
         this.hamiltonianCycle = [];
+        for(let i = 0; i < game.board.width * game.board.height; i++) {
+            this.hamiltonianCycle[i] = 0;
+        }
         this.game = game;
         this.maze = new Maze(game);
         this.maze.generation(-1, -1, 0, 0);
@@ -195,8 +201,8 @@ class HamCycle {
                 case Moves.DOWN: ++y; break;
                 case Moves.UP: --y; break;
             }
-            //console.log(hamCycleIndex);
-            //console.log("board: " + this.game.board.width*this.game.board.height);
+            console.log(hamCycleIndex);
+            console.log("board: " + this.game.board.width*this.game.board.height);
             // POTENTIAL PROBLEMS HERE
         } while(hamCycleIndex < this.game.board.width*this.game.board.height);
     }
@@ -279,6 +285,40 @@ class HamCycle {
         }
         throw Error("Unreachable direction.");
     }
+
+    writeMazeToFile() {
+        console.log(this.maze);
+        for(let y = 0; y < this.game.board.height/2; ++y) {
+            fs.appendFileSync(this.game.game.id, '#');
+            for(let x = 0; x < this.game.board.width/2; ++x) {
+                if(this.maze.canGoRight(x,y) && this.maze.canGoDown(x,y)) {
+                    fs.appendFileSync(this.game.game.id, '+');
+                } else if(this.maze.canGoRight(x,y)) {
+                    fs.appendFileSync(this.game.game.id, '-');
+                } else if(this.maze.canGoDown(x,y)) {
+                    fs.appendFileSync(this.game.game.id, "|");
+                } else {
+                    fs.appendFileSync(this.game.game.id, " ");
+                }
+            }
+            fs.appendFileSync(this.game.game.id, "\n");
+        }
+    }
+
+    writeHamCycleToFile() {
+        let fileName = "cycle " + this.game.game.id;
+        for(let y = 0; y < this.game.board.height; y++) {
+            for(let x = 0; x < this.game.board.width; x++) {
+                let number = this.getHamCycleNumber(x,y);
+                number = number.toString();
+                while(number.length < 4) {
+                    number = "0" + number;
+                }
+                fs.appendFileSync(fileName, number);
+            }
+            fs.appendFileSync(fileName, "\n");
+        }
+    }
 }
 
 // Make sure snake is alive (responding to requests).
@@ -317,6 +357,8 @@ app.post('/move', (request, response) => {
     let canGoLeft = !currentHamCycle.checkForCollison(request.body.you.body[0].x-1, request.body.you.body[0].y);
     let canGoDown = !currentHamCycle.checkForCollison(request.body.you.body[0].x, request.body.you.body[0].y+1);
     let canGoUp = !currentHamCycle.checkForCollison(request.body.you.body[0].x, request.body.you.body[0].y-1);
+
+    console.log("All directions checked.");
 
     let bestDistance = -1;
     let bestDirection;
@@ -362,6 +404,8 @@ app.post('/move', (request, response) => {
 
 // Game has ended.
 app.post('/end', (request, response) => {
+    gameData[request.body.game.id].writeMazeToFile();
+    gameData[request.body.game.id].writeHamCycleToFile();
     return response.status(200).json({});
 });
 
