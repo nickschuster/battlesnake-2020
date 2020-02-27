@@ -46,7 +46,7 @@ class Maze {
     constructor(game) {
         this.game = game;
         this.nodes = [];
-        for(let i = 0; i < Math.floor(game.board.height * game.board.width/4); i++) {
+        for(let i = 0; i < Math.floor((game.board.height * game.board.width)/4); i++) {
             this.nodes.push(new MazeNode());
         }
     }
@@ -68,7 +68,7 @@ class Maze {
     }
 
     canGoDown(x, y) {
-        return this.nodes[Math.floor(x+y*this.game.board.height/2)].canGoDown;
+        return this.nodes[Math.floor(x+y*this.game.board.width/2)].canGoDown;
     }
 
     canGoLeft(x, y) {
@@ -195,16 +195,17 @@ class HamCycle {
             }
             direction = nextDirection;
 
+
             switch(nextDirection) {
                 case Moves.RIGHT: ++x; break;
                 case Moves.LEFT: --x; break;
                 case Moves.DOWN: ++y; break;
                 case Moves.UP: --y; break;
             }
+            console.log("gen coords: " + x + " " +y);
             console.log(hamCycleIndex);
-            console.log("board: " + this.game.board.width*this.game.board.height);
             // POTENTIAL PROBLEMS HERE
-        } while(hamCycleIndex < this.game.board.width*this.game.board.height);
+        } while(hamCycleIndex < (this.game.board.width*this.game.board.height));
     }
 
     setHamCycleNumber(x, y, hamCycleIndex) {
@@ -287,10 +288,10 @@ class HamCycle {
     }
 
     writeMazeToFile() {
-        console.log(this.maze);
-        for(let y = 0; y < this.game.board.height/2; ++y) {
+        fs.writeFileSync(this.game.game.id, "");
+        for(let y = 0; y < Math.floor(this.game.board.height/2); ++y) {
             fs.appendFileSync(this.game.game.id, '#');
-            for(let x = 0; x < this.game.board.width/2; ++x) {
+            for(let x = 0; x < Math.floor(this.game.board.width/2); ++x) {
                 if(this.maze.canGoRight(x,y) && this.maze.canGoDown(x,y)) {
                     fs.appendFileSync(this.game.game.id, '+');
                 } else if(this.maze.canGoRight(x,y)) {
@@ -307,11 +308,12 @@ class HamCycle {
 
     writeHamCycleToFile() {
         let fileName = "cycle " + this.game.game.id;
+        fs.writeFileSync(fileName, "");
         for(let y = 0; y < this.game.board.height; y++) {
             for(let x = 0; x < this.game.board.width; x++) {
                 let number = this.getHamCycleNumber(x,y);
                 number = number.toString();
-                while(number.length < 4) {
+                while(number.length < 2) {
                     number = "0" + number;
                 }
                 fs.appendFileSync(fileName, number);
@@ -334,6 +336,15 @@ app.post('/start', (request, response) => {
 
 // Ask for move. Get 500 ms to repond with up,left,right,down.
 app.post('/move', (request, response) => {
+
+    // Check if there exists an enemy snake body with a number greater than the head.
+    // If there is set a cutting distance of the highest enemy block plus 3 (buffer).
+    // Follow cycle if there is no such block until there is such a block.
+    // If no enemy snakes have a block greater than the head, try to find food.
+    // 
+    // Need to determine how many blocks to scan into the future.
+
+    // Logic for getting food.
 
     // Need away to detemine if the snake is currently on food and 
     // subtract on extra square if it is.
