@@ -202,10 +202,6 @@ class HamCycle {
                 case Moves.DOWN: ++y; break;
                 case Moves.UP: --y; break;
             }
-            // POTENTIAL PROBLEMS HERE
-            
-            // I think there is actually no problem ***.
-            // If the number overflows it just loops backaround.
         } while(hamCycleIndex < (this.game.board.width*this.game.board.height));
     }
 
@@ -228,15 +224,17 @@ class HamCycle {
     checkForCollison(x, y) {
         if(x >= this.game.board.width || x < 0 || y >= this.game.board.height || y < 0) return true;
         let collision = false;
+        // Body collisions
         this.game.you.body.forEach(item => {
             if(item.x == x && item.y == y) collision = true;
-            console.log(item.x + " " + x + item.y + " " + y);
         });
-        console.log(collision);
+        // Enemy collisions
+        this.game.board.snakes.forEach(snake => {
+            snake.forEach(item => {
+                if(item.x == x && item.y == y) collision = true;
+            });
+        });
         return collision;
-        
-        // CHECK FOR ENEMY SNAKES
-        //for (const enemy in this.game)
     }
 
     findNextDirection(x, y, direction) {
@@ -351,6 +349,7 @@ app.post('/move', (request, response) => {
     // subtract on extra square if it is.
 
     let currentHamCycle = gameData[request.body.game.id];
+    currentHamCycle.game = request.body;
     let hamCycleIndex = currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y);
     let distanceToFood = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.board.food[0].x,request.body.board.food[0].y));
     let distanceToTail = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[request.body.you.body.length-1].x, request.body.you.body[request.body.you.body.length-1].x));
@@ -369,8 +368,6 @@ app.post('/move', (request, response) => {
     let canGoLeft = !currentHamCycle.checkForCollison(request.body.you.body[0].x-1, request.body.you.body[0].y);
     let canGoDown = !currentHamCycle.checkForCollison(request.body.you.body[0].x, request.body.you.body[0].y+1);
     let canGoUp = !currentHamCycle.checkForCollison(request.body.you.body[0].x, request.body.you.body[0].y-1);
-
-    console.log("All directions checked.");
 
     let bestDistance = -1;
     let bestDirection;
