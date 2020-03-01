@@ -357,7 +357,7 @@ app.post('/move', (request, response) => {
     let emptySquaresOnBoard = request.body.board.height*request.body.board.width - request.body.you.body.length - 2; 
 
     // Logic for progressivly lowering cutting amount. 
-    if(emptySquaresOnBoard < Math.floor(request.body.game.board.width*request.body.game.board.height/2)) {
+    if(emptySquaresOnBoard < Math.floor(request.body.board.width*request.body.board.height/2)) {
         cuttingAmountAvailable = 0;
     } else if (distanceToFood < distanceToTail) {
         // Eating food lengthens you by one
