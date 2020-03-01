@@ -52,37 +52,37 @@ class Maze {
     }
 
     markVisited(x, y) {
-        this.nodes[Math.floor(x+y*this.game.board.width/2)].visited = true;
+        this.nodes[x+y*Math.floor(this.game.board.width/2)].visited = true;
     }
 
     markCanGoDown(x, y) {
-        this.nodes[Math.floor(x+y*this.game.board.width/2)].canGoDown = true;
+        this.nodes[x+y*Math.floor(this.game.board.width/2)].canGoDown = true;
     }
 
     markCanGoRight(x, y) {
-        this.nodes[Math.floor(x+y*this.game.board.width/2)].canGoRight = true;
+        this.nodes[x+y*Math.floor(this.game.board.width/2)].canGoRight = true;
     }
 
     canGoRight(x, y) {
-        return this.nodes[Math.floor(x+y*this.game.board.width/2)].canGoRight;
+        return this.nodes[x+y*Math.floor(this.game.board.width/2)].canGoRight;
     }
 
     canGoDown(x, y) {
-        return this.nodes[Math.floor(x+y*this.game.board.width/2)].canGoDown;
+        return this.nodes[x+y*Math.floor(this.game.board.width/2)].canGoDown;
     }
 
     canGoLeft(x, y) {
         if(x == 0) return false;
-        return this.nodes[Math.floor((x-1)+y*this.game.board.width/2)].canGoRight;
+        return this.nodes[(x-1)+y*Math.floor(this.game.board.width/2)].canGoRight;
     }
 
     canGoUp(x, y) {
         if(y == 0) return false;
-        return this.nodes[Math.floor(x+(y-1)*this.game.board.width/2)].canGoDown;
+        return this.nodes[x+(y-1)*Math.floor(this.game.board.width/2)].canGoDown;
     }
 
     isVisited(x, y) {
-        return this.nodes[Math.floor(x+y*this.game.board.width/2)].visited;
+        return this.nodes[x+y*Math.floor(this.game.board.width/2)].visited;
     }
 
     // Recursively generate the maze.
@@ -117,8 +117,8 @@ class Maze {
         }
         this.generation(x, y, x-1, y);
         this.generation(x, y, x+1, y);
-        this.generation(x, y, x, y-1);
         this.generation(x, y, x, y+1);
+        this.generation(x, y, x, y-1);
 
     }
 }
@@ -202,9 +202,10 @@ class HamCycle {
                 case Moves.DOWN: ++y; break;
                 case Moves.UP: --y; break;
             }
-            console.log("gen coords: " + x + " " +y);
-            console.log(hamCycleIndex);
             // POTENTIAL PROBLEMS HERE
+            
+            // I think there is actually no problem ***.
+            // If the number overflows it just loops backaround.
         } while(hamCycleIndex < (this.game.board.width*this.game.board.height));
     }
 
@@ -239,7 +240,7 @@ class HamCycle {
     }
 
     findNextDirection(x, y, direction) {
-        if(direction == Moves.UP) {
+        if(direction == Moves.RIGHT) {
             if(this.maze.canGoUp(x,y)) {
                 return Moves.UP;
             }
@@ -272,7 +273,7 @@ class HamCycle {
                 return Moves.UP;
             }
             return Moves.RIGHT;
-        } else if(direction == Moves.RIGHT) {
+        } else if(direction == Moves.UP) {
             if(this.maze.canGoLeft(x,y)) {
                 return Moves.LEFT;
             }
