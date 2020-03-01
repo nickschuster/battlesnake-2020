@@ -354,14 +354,27 @@ app.post('/move', (request, response) => {
     let distanceToFood = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.board.food[0].x,request.body.board.food[0].y));
     let distanceToTail = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[request.body.you.body.length-1].x, request.body.you.body[request.body.you.body.length-1].x));
     let cuttingAmountAvailable = distanceToTail - request.body.you.body.length - 3;
-    let emptySquaresOnBoard = request.body.board.height*request.body.board.width - request.body.you.body.length - request.body.board.food.length; 
+    let emptySquaresOnBoard = request.body.board.height*request.body.board.width - request.body.you.body.length - 2; 
 
-    // Logic for progressivly lowering cutting amount needed. 
+    // Logic for progressivly lowering cutting amount. 
+    if(emptySquaresOnBoard < Math.floor(request.body.game.board.width*request.body.game.board.height/2)) {
+        cuttingAmountAvailable = 0;
+    } else if (distanceToFood < distanceToTail) {
+        // Eating food lengthens you by one
+        cuttingAmountAvailable -= 1;
+        if((distanceToTail - distanceToFood) * 4 > emptySquaresOnBoard) {
+            cuttingAmountAvailable -= 10;
+        }
+    }
 
+    // Make sure cutting amount is maxed out.
     let cuttingAmountDesired = distanceToFood;
-
-    // Temp
-    cuttingAmountAvailable = 0;
+    if(cuttingAmountDesired < cuttingAmountAvailable) {
+        cuttingAmountAvailable = cuttingAmountDesired;
+    }
+    if(cuttingAmountAvailable < 0) {
+        cuttingAmountAvailable = 0;
+    }
 
     // Get available moves.
     let canGoRight = !currentHamCycle.checkForCollison(request.body.you.body[0].x+1, request.body.you.body[0].y);
