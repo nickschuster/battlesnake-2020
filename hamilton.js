@@ -230,7 +230,7 @@ class HamCycle {
         });
         // Enemy collisions
         this.game.board.snakes.forEach(snake => {
-            snake.forEach(item => {
+            snake.body.forEach(item => {
                 if(item.x == x && item.y == y) collision = true;
             });
         });
