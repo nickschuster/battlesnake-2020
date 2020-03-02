@@ -356,8 +356,6 @@ app.post('/move', (request, response) => {
     let cuttingAmountAvailable = distanceToTail - request.body.you.body.length - 3;
     let emptySquaresOnBoard = request.body.board.height*request.body.board.width - request.body.you.body.length - 2; 
 
-    // DONT WORK
-
     // Logic for progressivly lowering cutting amount. 
     if(emptySquaresOnBoard < Math.floor(request.body.board.width*request.body.board.height/2)) {
         cuttingAmountAvailable = 0;
@@ -365,9 +363,9 @@ app.post('/move', (request, response) => {
         // Eating food lengthens you by one
         cuttingAmountAvailable -= 1;
         
-        //if((distanceToTail - distanceToFood) * 4 > emptySquaresOnBoard) {
-          //  cuttingAmountAvailable -= 10;
-        //}
+        if((distanceToTail - distanceToFood) * 4 > emptySquaresOnBoard) {
+            cuttingAmountAvailable -= 10;
+        }
     }
 
     // Make sure cutting amount is maxed out.
