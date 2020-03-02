@@ -356,15 +356,18 @@ app.post('/move', (request, response) => {
     let cuttingAmountAvailable = distanceToTail - request.body.you.body.length - 3;
     let emptySquaresOnBoard = request.body.board.height*request.body.board.width - request.body.you.body.length - 2; 
 
+    // DONT WORK
+
     // Logic for progressivly lowering cutting amount. 
     if(emptySquaresOnBoard < Math.floor(request.body.board.width*request.body.board.height/2)) {
         cuttingAmountAvailable = 0;
     } else if (distanceToFood < distanceToTail) {
         // Eating food lengthens you by one
         cuttingAmountAvailable -= 1;
-        if((distanceToTail - distanceToFood) * 4 > emptySquaresOnBoard) {
-            cuttingAmountAvailable -= 10;
-        }
+        
+        //if((distanceToTail - distanceToFood) * 4 > emptySquaresOnBoard) {
+          //  cuttingAmountAvailable -= 10;
+        //}
     }
 
     // Make sure cutting amount is maxed out.
@@ -386,28 +389,28 @@ app.post('/move', (request, response) => {
     let bestDirection;
     if(canGoRight) {
         let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x+1, request.body.you.body[0].y));
-        if (distance <= cuttingAmountAvailable || distance < bestDistance) {
+        if (distance <= cuttingAmountAvailable && distance > bestDistance) {
             bestDirection = Moves.RIGHT;
             bestDistance = distance;
         }
     }
     if(canGoLeft) {
         let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x-1, request.body.you.body[0].y));
-        if (distance <= cuttingAmountAvailable || distance < bestDistance) {
+        if (distance <= cuttingAmountAvailable && distance > bestDistance) {
             bestDirection = Moves.LEFT;
             bestDistance = distance;
         }
     }
     if(canGoDown) {
         let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y+1));
-        if (distance <= cuttingAmountAvailable || distance < bestDistance) {
+        if (distance <= cuttingAmountAvailable && distance > bestDistance) {
             bestDirection = Moves.DOWN;
             bestDistance = distance;
         }
     }
     if(canGoUp) {
         let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y-1));
-        if (distance <= cuttingAmountAvailable || distance < bestDistance) {
+        if (distance <= cuttingAmountAvailable && distance > bestDistance) {
             bestDirection = Moves.UP;
             bestDistance = distance;
         }
