@@ -305,6 +305,25 @@ class HamCycle {
         return this.getDistanceOnCycle(headIndex, highestIndex);
     }
 
+    findColsestFood() {
+        let closest = Math.abs(this.game.body.food[0].x - this.game.you.body[0].x) + Math.abs(this.game.body.food[0].y - this.game.you.body[0].y);
+        let closestFood = {
+            x: this.game.body.food[0].x,
+            y: this.game.body.food[0].y
+        };
+        this.game.board.food.forEach(item => {
+            let xDist = Math.abs(item.x - this.game.you.body[0].x);
+            let yDist = Math.abs(item.y - this.game.you.body[0].y);
+            let totalDist = xDist + yDist;
+            if(totalDist < closest) {
+                closest = totalDist;
+                closestFood.x = item.x;
+                closestFood.y = item.y;
+            }
+        });
+        return closestFood;
+    }
+
     writeMazeToFile() {
         fs.writeFileSync(this.game.game.id, "");
         for(let y = 0; y < Math.floor(this.game.board.height/2); ++y) {
@@ -369,7 +388,8 @@ app.post('/move', (request, response) => {
     let currentHamCycle = gameData[request.body.game.id];
     currentHamCycle.game = request.body;
     let hamCycleIndex = currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y);
-    let distanceToFood = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.board.food[0].x,request.body.board.food[0].y));
+    let closestFood = currentHamCycle.findClosestFood();
+    let distanceToFood = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(closestFood.x, closestFood.y));
     let distanceToTail = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[request.body.you.body.length-1].x, request.body.you.body[request.body.you.body.length-1].x));
     let cuttingAmountAvailable = distanceToTail - request.body.you.body.length - 3;
     let emptySquaresOnBoard = request.body.board.height*request.body.board.width - request.body.you.body.length - 2; 
