@@ -374,7 +374,6 @@ app.post('/move', (request, response) => {
     let cuttingAmountAvailable = distanceToTail - request.body.you.body.length - 3;
     let emptySquaresOnBoard = request.body.board.height*request.body.board.width - request.body.you.body.length - 2; 
     let distanceToClosestEnemy = currentHamCycle.enemyScan();
-    let cuttingAmountDesired = distanceToFood;
     
     // Logic for progressivly lowering cutting amount. 
     if(emptySquaresOnBoard < Math.floor(request.body.board.width*request.body.board.height/2)) {
@@ -394,74 +393,44 @@ app.post('/move', (request, response) => {
     let canGoDown = !currentHamCycle.checkForCollison(request.body.you.body[0].x, request.body.you.body[0].y+1);
     let canGoUp = !currentHamCycle.checkForCollison(request.body.you.body[0].x, request.body.you.body[0].y-1);
 
-    // Logic for avoiding enemys
-    let enemyThreshold = 5;
+    let cuttingAmountDesired = distanceToFood;
+    // Make sure cutting amount is maxed out.
+    if(cuttingAmountDesired < cuttingAmountAvailable) {
+        cuttingAmountAvailable = cuttingAmountDesired;
+    }
+    if(cuttingAmountAvailable < 0) {
+        cuttingAmountAvailable = 0;
+    }
+
+    // Get the best direction to take
     let bestDistance = -1;
     let bestDirection;
-    if(distanceToClosestEnemy < enemyThreshold) {
-        if(canGoRight) {
-            let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x+1, request.body.you.body[0].y));
-            if (distance > currentHamCycle.getHamCycleNumber() && distance <= cuttingAmountAvailable && distance > bestDistance) {
-                bestDirection = Moves.RIGHT;
-                bestDistance = distance;
-            }
+    if(canGoRight) {
+        let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x+1, request.body.you.body[0].y));
+        if (distance <= cuttingAmountAvailable && distance > bestDistance) {
+            bestDirection = Moves.RIGHT;
+            bestDistance = distance;
         }
-        if(canGoLeft) {
-            let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x-1, request.body.you.body[0].y));
-            if (distance > currentHamCycle.getHamCycleNumber() && distance <= cuttingAmountAvailable && distance > bestDistance) {
-                bestDirection = Moves.LEFT;
-                bestDistance = distance;
-            }
+    }
+    if(canGoLeft) {
+        let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x-1, request.body.you.body[0].y));
+        if (distance <= cuttingAmountAvailable && distance > bestDistance) {
+            bestDirection = Moves.LEFT;
+            bestDistance = distance;
         }
-        if(canGoDown) {
-            let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y+1));
-            if (distance > currentHamCycle.getHamCycleNumber() && distance <= cuttingAmountAvailable && distance > bestDistance) {
-                bestDirection = Moves.DOWN;
-                bestDistance = distance;
-            }
+    }
+    if(canGoDown) {
+        let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y+1));
+        if (distance <= cuttingAmountAvailable && distance > bestDistance) {
+            bestDirection = Moves.DOWN;
+            bestDistance = distance;
         }
-        if(canGoUp) {
-            let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y-1));
-            if (distance > currentHamCycle.getHamCycleNumber() && distance <= cuttingAmountAvailable && distance > bestDistance) {
-                bestDirection = Moves.UP;
-                bestDistance = distance;
-            }
-        }
-    } else {
-        // Make sure cutting amount is maxed out.
-        if(cuttingAmountDesired < cuttingAmountAvailable) {
-            cuttingAmountAvailable = cuttingAmountDesired;
-        }
-        if(cuttingAmountAvailable < 0) {
-            cuttingAmountAvailable = 0;
-        }
-        if(canGoRight) {
-            let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x+1, request.body.you.body[0].y));
-            if (distance <= cuttingAmountAvailable && distance > bestDistance) {
-                bestDirection = Moves.RIGHT;
-                bestDistance = distance;
-            }
-        }
-        if(canGoLeft) {
-            let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x-1, request.body.you.body[0].y));
-            if (distance <= cuttingAmountAvailable && distance > bestDistance) {
-                bestDirection = Moves.LEFT;
-                bestDistance = distance;
-            }
-        }
-        if(canGoDown) {
-            let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y+1));
-            if (distance <= cuttingAmountAvailable && distance > bestDistance) {
-                bestDirection = Moves.DOWN;
-                bestDistance = distance;
-            }
-        }
-        if(canGoUp) {
-            let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y-1));
-            if (distance <= cuttingAmountAvailable && distance > bestDistance) {
-                bestDirection = Moves.UP;
-                bestDistance = distance;
-            }
+    }
+    if(canGoUp) {
+        let distance = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[0].x, request.body.you.body[0].y-1));
+        if (distance <= cuttingAmountAvailable && distance > bestDistance) {
+            bestDirection = Moves.UP;
+            bestDistance = distance;
         }
     }
 
