@@ -305,7 +305,7 @@ class HamCycle {
         return this.getDistanceOnCycle(headIndex, highestIndex);
     }
 
-    findColsestFood() {
+    findClosestFood() {
         let closest = Math.abs(this.game.body.food[0].x - this.game.you.body[0].x) + Math.abs(this.game.body.food[0].y - this.game.you.body[0].y);
         let closestFood = {
             x: this.game.body.food[0].x,
@@ -454,7 +454,7 @@ app.post('/move', (request, response) => {
         }
     }
 
-    if(!(bestDistance >= 0)) {
+    if(bestDistance < 0) {
         if(canGoUp) bestDirection = Moves.UP;
         else if(canGoLeft) bestDirection = Moves.LEFT;
         else if(canGoRight) bestDirection = Moves.RIGHT;
