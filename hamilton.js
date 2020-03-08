@@ -359,15 +359,16 @@ class HamCycle {
     }
 
     writeHamCycleToFile() {
-        let fileName = "cycle " + this.game.game.id;
+        let fileName = "cycle-" + this.game.game.id;
         fs.writeFileSync(fileName, "");
         for(let y = 0; y < this.game.board.height; y++) {
             for(let x = 0; x < this.game.board.width; x++) {
                 let number = this.getHamCycleNumber(x,y);
                 number = number.toString();
-                while(number.length < 2) {
+                while(number.length < 3) {
                     number = "0" + number;
                 }
+                number += " ";
                 fs.appendFileSync(fileName, number);
             }
             fs.appendFileSync(fileName, "\n");
