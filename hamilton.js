@@ -236,14 +236,16 @@ class HamCycle {
         });
         // Enemy head collisions
         this.game.board.snakes.forEach(snake => {
-            if((snake.body[0].x == x+1 && snake.body[0].y == y) || 
-            (snake.body[0].x == x-1 && snake.body[0].y == y) ||
-            (snake.body[0].x == x && snake.body[0].y == y+1) || 
-            (snake.body[0].x == x && snake.body[0].y == y-1)) {
-                if(snake.body.length >= this.game.you.body.length) {
-                    collision = true;
-                }
-            } 
+            if(snake.id != this.game.you.id) {
+                if((snake.body[0].x == x+1 && snake.body[0].y == y) || 
+                (snake.body[0].x == x-1 && snake.body[0].y == y) ||
+                (snake.body[0].x == x && snake.body[0].y == y+1) || 
+                (snake.body[0].x == x && snake.body[0].y == y-1)) {
+                    if(snake.body.length >= this.game.you.body.length) {
+                        collision = true;
+                    }
+                } 
+            }
         });
         return collision;
     }
