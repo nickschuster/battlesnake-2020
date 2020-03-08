@@ -329,7 +329,7 @@ class HamCycle {
             let yDist = Math.abs(item.y - this.game.you.body[0].y);
             let totalDist = xDist + yDist;
             if(totalDist < closest) {
-                if(this.getHamCycleNumber(item.x, item.y) != undefined) {
+                if(this.getHamCycleNumber(item.x, item.y) != 0) {
                     closest = totalDist;
                     closestFood.x = item.x;
                     closestFood.y = item.y;
