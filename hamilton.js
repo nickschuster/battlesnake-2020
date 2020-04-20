@@ -384,12 +384,12 @@ app.post('/ping', (request, response) => {
 // Start of a game. Return snake options.
 app.post('/start', (request, response) => {
     gameData[request.body.game.id] = new HamCycle(request.body);
+    console.log("New game started.");
     return response.status(200).json(snake);
 });
 
 // Ask for move. Get 500 ms to repond with up,left,right,down.
 app.post('/move', (request, response) => {
-
     // Check if there exists an enemy snake body with a number greater than the head.
     // If there is set a cutting distance of the highest enemy block plus 3 (buffer).
     // Follow cycle if there is no such block until there is such a block.
