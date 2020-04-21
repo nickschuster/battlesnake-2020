@@ -384,7 +384,6 @@ app.post('/ping', (request, response) => {
 // Start of a game. Return snake options.
 app.post('/start', (request, response) => {
     gameData[request.body.game.id] = new HamCycle(request.body);
-    console.log("New game started.");
     return response.status(200).json(snake);
 });
 
@@ -409,7 +408,6 @@ app.post('/move', (request, response) => {
     let distanceToTail = currentHamCycle.getDistanceOnCycle(hamCycleIndex, currentHamCycle.getHamCycleNumber(request.body.you.body[request.body.you.body.length-1].x, request.body.you.body[request.body.you.body.length-1].x));
     let cuttingAmountAvailable = distanceToTail - request.body.you.body.length - 3;
     let emptySquaresOnBoard = request.body.board.height*request.body.board.width - request.body.you.body.length - 2; 
-    let distanceToClosestEnemy = currentHamCycle.enemyScan();
     
     // Logic for progressivly lowering cutting amount. 
     if(emptySquaresOnBoard < Math.floor(request.body.board.width*request.body.board.height/2)) {
@@ -471,6 +469,7 @@ app.post('/move', (request, response) => {
     }
 
     if(bestDistance < 0) {
+        console.log("could not find move");
         if(canGoUp) bestDirection = Moves.UP;
         else if(canGoLeft) bestDirection = Moves.LEFT;
         else if(canGoRight) bestDirection = Moves.RIGHT;
