@@ -27,9 +27,8 @@ const Moves = {
     UP: 'up',
     DOWN: 'down'
 };
-const cycleIndex = 0;
-const boardIndex = 0;
 let gameData = {};
+const moveCount = 0
 
 // A node in a maze.
 class MazeNode {
@@ -389,6 +388,9 @@ app.post('/start', (request, response) => {
 
 // Ask for move. Get 500 ms to repond with up,left,right,down.
 app.post('/move', (request, response) => {
+
+    moveCount += 1
+
     // Check if there exists an enemy snake body with a number greater than the head.
     // If there is set a cutting distance of the highest enemy block plus 3 (buffer).
     // Follow cycle if there is no such block until there is such a block.
@@ -468,8 +470,9 @@ app.post('/move', (request, response) => {
         }
     }
 
+    console.log(bestDistance);
+
     if(bestDistance < 0) {
-        console.log("could not find move");
         if(canGoUp) bestDirection = Moves.UP;
         else if(canGoLeft) bestDirection = Moves.LEFT;
         else if(canGoRight) bestDirection = Moves.RIGHT;
@@ -484,6 +487,7 @@ app.post('/move', (request, response) => {
 app.post('/end', (request, response) => {
     gameData[request.body.game.id].writeMazeToFile();
     gameData[request.body.game.id].writeHamCycleToFile();
+    moveCount = 0
     return response.status(200).json({});
 });
 
