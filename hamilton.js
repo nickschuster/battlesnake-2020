@@ -28,7 +28,7 @@ const Moves = {
     DOWN: 'down'
 };
 let gameData = {};
-const moveCount = 0
+let moveCount = 0
 
 // A node in a maze.
 class MazeNode {
